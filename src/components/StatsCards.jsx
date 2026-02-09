@@ -10,16 +10,13 @@ function formatDuration(mins) {
 }
 
 export default function StatsCards({ stats }) {
-  const cards = [
+  const heroColor = stats.totalProfit >= 0 ? 'green' : 'red';
+
+  const primaryCards = [
     {
-      label: 'Total Profit',
-      value: formatMoney(stats.totalProfit),
-      color: stats.totalProfit >= 0 ? 'green' : 'red',
-    },
-    {
-      label: 'Sessions Played',
-      value: stats.totalSessions,
-      color: 'neutral',
+      label: 'Hourly Rate',
+      value: formatMoney(stats.hourlyRate),
+      color: stats.hourlyRate >= 0 ? 'green' : 'red',
     },
     {
       label: 'Win Rate',
@@ -27,19 +24,17 @@ export default function StatsCards({ stats }) {
       color: stats.winRate >= 50 ? 'green' : 'red',
     },
     {
-      label: 'Hourly Rate',
-      value: formatMoney(stats.hourlyRate),
-      color: stats.hourlyRate >= 0 ? 'green' : 'red',
+      label: 'Sessions',
+      value: stats.totalSessions,
+      color: 'neutral',
     },
+  ];
+
+  const secondaryCards = [
     {
       label: 'Avg Session',
       value: formatMoney(stats.avgProfit),
       color: stats.avgProfit >= 0 ? 'green' : 'red',
-    },
-    {
-      label: 'Avg Duration',
-      value: formatDuration(stats.avgDuration),
-      color: 'neutral',
     },
     {
       label: 'Biggest Win',
@@ -52,20 +47,39 @@ export default function StatsCards({ stats }) {
       color: stats.biggestLoss < 0 ? 'red' : 'green',
     },
     {
-      label: 'Current Streak',
+      label: 'Avg Duration',
+      value: formatDuration(stats.avgDuration),
+      color: 'neutral',
+    },
+    {
+      label: 'Streak',
       value: `${Math.abs(stats.currentStreak)} ${stats.currentStreak >= 0 ? 'W' : 'L'}`,
       color: stats.currentStreak >= 0 ? 'green' : 'red',
     },
   ];
 
   return (
-    <div className="stats-cards">
-      {cards.map((c) => (
-        <div key={c.label} className={`stat-card stat-${c.color}`}>
-          <div className="stat-label">{c.label}</div>
-          <div className="stat-value">{c.value}</div>
-        </div>
-      ))}
+    <div className="stats-section">
+      <div className={`stat-hero stat-${heroColor}`}>
+        <div className="stat-label">Total Profit</div>
+        <div className="stat-value">{formatMoney(stats.totalProfit)}</div>
+      </div>
+      <div className="stats-primary">
+        {primaryCards.map((c) => (
+          <div key={c.label} className={`stat-card stat-${c.color}`}>
+            <div className="stat-label">{c.label}</div>
+            <div className="stat-value">{c.value}</div>
+          </div>
+        ))}
+      </div>
+      <div className="stats-secondary">
+        {secondaryCards.map((c) => (
+          <div key={c.label} className={`stat-card stat-sm stat-${c.color}`}>
+            <div className="stat-label">{c.label}</div>
+            <div className="stat-value">{c.value}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useStats } from './hooks/useStats';
 import SessionForm from './components/SessionForm';
 import SessionList from './components/SessionList';
 import StatsCards from './components/StatsCards';
+import RecentSessions from './components/RecentSessions';
 import {
   ProfitTimeline,
   SessionResultsChart,
@@ -67,16 +68,31 @@ export default function App() {
           <div className="dashboard">
             <StatsCards stats={stats} />
             {sessions.length > 0 ? (
-              <div className="charts-grid">
+              <>
+                {/* Hero chart -- full width */}
                 <ProfitTimeline data={stats.profitOverTime} />
-                <SessionResultsChart data={stats.sessionResults} />
+
+                {/* Recent sessions + session results side by side on desktop */}
+                <div className="dashboard-split">
+                  <RecentSessions
+                    sessions={sessions}
+                    onEdit={handleEdit}
+                    onViewAll={() => setTab('History')}
+                  />
+                  <SessionResultsChart data={stats.sessionResults} />
+                </div>
+
+                {/* Monthly is the next most important breakdown */}
                 <MonthlyProfitChart data={stats.profitByMonth} />
-                <ProfitByCategory data={stats.profitByGameType} title="Profit by Game Type" />
-                <ProfitByCategory data={stats.profitByStakes} title="Profit by Stakes" />
-                <ProfitByCategory data={stats.profitByLocation} title="Profit by Location" />
-                <SessionDistributionPie data={stats.profitByGameType} />
-                <HourlyRateChart data={stats.hourlyByGameType} />
-              </div>
+
+                {/* Secondary charts in a grid */}
+                <div className="charts-grid">
+                  <ProfitByCategory data={stats.profitByStakes} title="Profit by Stakes" />
+                  <HourlyRateChart data={stats.hourlyByGameType} />
+                  <ProfitByCategory data={stats.profitByLocation} title="Profit by Location" />
+                  <SessionDistributionPie data={stats.profitByGameType} />
+                </div>
+              </>
             ) : (
               <div className="empty-state">
                 <p>Log your first session to see stats and charts.</p>

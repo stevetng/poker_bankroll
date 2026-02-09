@@ -8,7 +8,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ReferenceLine,
   Cell,
   PieChart,
@@ -31,16 +30,21 @@ function MoneyTooltip({ active, payload, label }) {
   );
 }
 
+function compactDollar(v) {
+  if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`;
+  return `$${v}`;
+}
+
 export function ProfitTimeline({ data }) {
   if (!data.length) return null;
   return (
-    <div className="chart-container">
+    <div className="chart-container chart-hero">
       <h3>Cumulative Profit</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data}>
+      <ResponsiveContainer width="100%" height={280}>
+        <LineChart data={data} margin={{ left: 0, right: 8, top: 4, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-          <XAxis dataKey="label" stroke="#888" fontSize={12} />
-          <YAxis stroke="#888" fontSize={12} tickFormatter={(v) => `$${v}`} />
+          <XAxis dataKey="label" stroke="#888" fontSize={11} tick={{ fontSize: 11 }} interval="preserveStartEnd" />
+          <YAxis stroke="#888" fontSize={11} tickFormatter={compactDollar} width={50} />
           <Tooltip content={<MoneyTooltip />} />
           <ReferenceLine y={0} stroke="#555" />
           <Line
@@ -48,7 +52,8 @@ export function ProfitTimeline({ data }) {
             dataKey="cumulative"
             stroke="#4ade80"
             strokeWidth={2}
-            dot={{ r: 3 }}
+            dot={{ r: 2 }}
+            activeDot={{ r: 5 }}
             name="Cumulative"
           />
         </LineChart>
@@ -62,14 +67,14 @@ export function SessionResultsChart({ data }) {
   return (
     <div className="chart-container">
       <h3>Session Results</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data}>
+      <ResponsiveContainer width="100%" height={280}>
+        <BarChart data={data} margin={{ left: 0, right: 8, top: 4, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-          <XAxis dataKey="label" stroke="#888" fontSize={12} />
-          <YAxis stroke="#888" fontSize={12} tickFormatter={(v) => `$${v}`} />
+          <XAxis dataKey="label" stroke="#888" fontSize={11} interval="preserveStartEnd" />
+          <YAxis stroke="#888" fontSize={11} tickFormatter={compactDollar} width={50} />
           <Tooltip content={<MoneyTooltip />} />
           <ReferenceLine y={0} stroke="#555" />
-          <Bar dataKey="profit" name="Profit">
+          <Bar dataKey="profit" name="Profit" radius={[2, 2, 0, 0]}>
             {data.map((entry, i) => (
               <Cell key={i} fill={entry.profit >= 0 ? '#4ade80' : '#f87171'} />
             ))}
@@ -85,14 +90,14 @@ export function ProfitByCategory({ data, title }) {
   return (
     <div className="chart-container">
       <h3>{title}</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} layout="vertical">
+      <ResponsiveContainer width="100%" height={Math.max(180, data.length * 50)}>
+        <BarChart data={data} layout="vertical" margin={{ left: 0, right: 8, top: 4, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-          <XAxis type="number" stroke="#888" fontSize={12} tickFormatter={(v) => `$${v}`} />
-          <YAxis type="category" dataKey="name" stroke="#888" fontSize={12} width={120} />
+          <XAxis type="number" stroke="#888" fontSize={11} tickFormatter={compactDollar} />
+          <YAxis type="category" dataKey="name" stroke="#888" fontSize={11} width={80} />
           <Tooltip content={<MoneyTooltip />} />
           <ReferenceLine x={0} stroke="#555" />
-          <Bar dataKey="profit" name="Profit">
+          <Bar dataKey="profit" name="Profit" radius={[0, 2, 2, 0]}>
             {data.map((entry, i) => (
               <Cell key={i} fill={entry.profit >= 0 ? '#4ade80' : '#f87171'} />
             ))}
@@ -108,14 +113,14 @@ export function MonthlyProfitChart({ data }) {
   return (
     <div className="chart-container">
       <h3>Monthly Profit</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data}>
+      <ResponsiveContainer width="100%" height={260}>
+        <BarChart data={data} margin={{ left: 0, right: 8, top: 4, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-          <XAxis dataKey="name" stroke="#888" fontSize={12} />
-          <YAxis stroke="#888" fontSize={12} tickFormatter={(v) => `$${v}`} />
+          <XAxis dataKey="name" stroke="#888" fontSize={11} interval="preserveStartEnd" />
+          <YAxis stroke="#888" fontSize={11} tickFormatter={compactDollar} width={50} />
           <Tooltip content={<MoneyTooltip />} />
           <ReferenceLine y={0} stroke="#555" />
-          <Bar dataKey="profit" name="Profit">
+          <Bar dataKey="profit" name="Profit" radius={[2, 2, 0, 0]}>
             {data.map((entry, i) => (
               <Cell key={i} fill={entry.profit >= 0 ? '#4ade80' : '#f87171'} />
             ))}
@@ -131,7 +136,7 @@ export function SessionDistributionPie({ data }) {
   return (
     <div className="chart-container">
       <h3>Sessions by Game Type</h3>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={260}>
         <PieChart>
           <Pie
             data={data}
@@ -139,8 +144,9 @@ export function SessionDistributionPie({ data }) {
             nameKey="name"
             cx="50%"
             cy="50%"
-            outerRadius={100}
+            outerRadius={80}
             label={({ name, sessions }) => `${name} (${sessions})`}
+            fontSize={11}
           >
             {data.map((_, i) => (
               <Cell key={i} fill={COLORS[i % COLORS.length]} />
@@ -158,17 +164,17 @@ export function HourlyRateChart({ data }) {
   return (
     <div className="chart-container">
       <h3>Hourly Rate by Game Type</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} layout="vertical">
+      <ResponsiveContainer width="100%" height={Math.max(180, data.length * 50)}>
+        <BarChart data={data} layout="vertical" margin={{ left: 0, right: 8, top: 4, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-          <XAxis type="number" stroke="#888" fontSize={12} tickFormatter={(v) => `$${v}/hr`} />
-          <YAxis type="category" dataKey="name" stroke="#888" fontSize={12} width={120} />
+          <XAxis type="number" stroke="#888" fontSize={11} tickFormatter={(v) => `$${v}/hr`} />
+          <YAxis type="category" dataKey="name" stroke="#888" fontSize={11} width={80} />
           <Tooltip
             formatter={(value) =>
               `$${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2 })}/hr`
             }
           />
-          <Bar dataKey="hourly" name="Hourly Rate">
+          <Bar dataKey="hourly" name="Hourly Rate" radius={[0, 2, 2, 0]}>
             {data.map((entry, i) => (
               <Cell key={i} fill={entry.hourly >= 0 ? '#60a5fa' : '#f87171'} />
             ))}
