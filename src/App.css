@@ -70,15 +70,22 @@
   gap: 0.75rem;
 }
 
-.stat-hero {
+/* Bankroll hero row */
+.bankroll-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.bankroll-card {
   background: #1e1e32;
   border-radius: 12px;
-  padding: 1.25rem 1rem;
+  padding: 1rem 0.75rem;
   border: 1px solid #2d2d44;
   text-align: center;
 }
 
-.stat-hero .stat-label {
+.bankroll-card .stat-label {
   font-size: 0.7rem;
   color: #94a3b8;
   text-transform: uppercase;
@@ -86,10 +93,65 @@
   margin-bottom: 0.25rem;
 }
 
-.stat-hero .stat-value {
-  font-size: 2rem;
+.bankroll-card .stat-value {
+  font-size: 1.5rem;
   font-weight: 800;
   line-height: 1.1;
+}
+
+.stat-val-green { color: #4ade80; }
+.stat-val-red { color: #f87171; }
+
+.bankroll-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.bankroll-set {
+  font-size: 0.7rem;
+}
+
+.bankroll-sub {
+  font-size: 0.68rem;
+  color: #64748b;
+  margin-top: 0.2rem;
+}
+
+.bankroll-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.bankroll-dollar {
+  font-size: 1rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.bankroll-edit input {
+  width: 100px;
+  padding: 0.35rem 0.5rem;
+  background: #16162a;
+  border: 1px solid #2d2d44;
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 14px;
+  outline: none;
+}
+
+.bankroll-edit input:focus {
+  border-color: #4ade80;
+}
+
+.btn-sm {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
 }
 
 .stats-primary {
@@ -531,8 +593,8 @@ tr:hover td {
     font-size: 0.9rem;
   }
 
-  .stat-hero .stat-value {
-    font-size: 2.5rem;
+  .bankroll-card .stat-value {
+    font-size: 2rem;
   }
 
   .stats-secondary {
@@ -570,12 +632,12 @@ tr:hover td {
     gap: 1.25rem;
   }
 
-  .stat-hero {
-    padding: 1.5rem;
+  .bankroll-card {
+    padding: 1.25rem;
   }
 
-  .stat-hero .stat-value {
-    font-size: 2.75rem;
+  .bankroll-card .stat-value {
+    font-size: 2.25rem;
   }
 
   .stats-primary .stat-card .stat-value {
@@ -593,5 +655,176 @@ tr:hover td {
 
   .session-form {
     padding: 1.5rem;
+  }
+
+  .report-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ===== Reports ===== */
+.reports {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reports h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #f1f5f9;
+}
+
+.report-filters {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+  background: #1e1e32;
+  border-radius: 10px;
+  padding: 1rem;
+  border: 1px solid #2d2d44;
+}
+
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.filter-section > label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.filter-row input {
+  flex: 1;
+  padding: 0.45rem 0.6rem;
+  background: #16162a;
+  border: 1px solid #2d2d44;
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 14px;
+  outline: none;
+  min-width: 0;
+}
+
+.filter-row input:focus {
+  border-color: #4ade80;
+}
+
+.filter-dash {
+  color: #64748b;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.chip {
+  padding: 0.3rem 0.65rem;
+  border: 1px solid #2d2d44;
+  border-radius: 20px;
+  background: #16162a;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: #4ade80;
+  color: #e2e8f0;
+}
+
+.chip-active {
+  background: #4ade80;
+  color: #0f172a;
+  border-color: #4ade80;
+  font-weight: 600;
+}
+
+.chip-active:hover {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #0f172a;
+}
+
+/* Report Results */
+.report-results {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.report-summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  background: #1e1e32;
+  border-radius: 10px;
+  padding: 1rem;
+  border: 1px solid #2d2d44;
+}
+
+.report-stat {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  padding: 0.35rem;
+}
+
+.report-stat-label {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.report-stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.report-session-list {
+  background: #1e1e32;
+  border-radius: 10px;
+  padding: 1rem 0.75rem;
+  border: 1px solid #2d2d44;
+}
+
+.report-session-list h3 {
+  margin: 0 0 0.75rem 0.25rem;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+}
+
+@media (min-width: 600px) {
+  .report-summary {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .report-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 960px) {
+  .report-summary {
+    grid-template-columns: repeat(8, 1fr);
   }
 }

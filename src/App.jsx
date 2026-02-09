@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useSessions } from './hooks/useSessions';
+import { useBankroll } from './hooks/useBankroll';
 import { useStats } from './hooks/useStats';
 import SessionForm from './components/SessionForm';
 import SessionList from './components/SessionList';
 import StatsCards from './components/StatsCards';
 import RecentSessions from './components/RecentSessions';
+import Reports from './components/Reports';
 import {
   ProfitTimeline,
   SessionResultsChart,
@@ -15,10 +17,11 @@ import {
 } from './components/Charts';
 import './App.css';
 
-const TABS = ['Dashboard', 'Log Session', 'History'];
+const TABS = ['Dashboard', 'Log Session', 'Reports', 'History'];
 
 export default function App() {
   const { sessions, addSession, deleteSession, editSession } = useSessions();
+  const { startingBankroll, setStartingBankroll } = useBankroll();
   const stats = useStats(sessions);
   const [tab, setTab] = useState('Dashboard');
   const [editing, setEditing] = useState(null);
@@ -66,13 +69,15 @@ export default function App() {
       <main className="app-main">
         {tab === 'Dashboard' && (
           <div className="dashboard">
-            <StatsCards stats={stats} />
+            <StatsCards
+              stats={stats}
+              startingBankroll={startingBankroll}
+              onSetStartingBankroll={setStartingBankroll}
+            />
             {sessions.length > 0 ? (
               <>
-                {/* Hero chart -- full width */}
                 <ProfitTimeline data={stats.profitOverTime} />
 
-                {/* Recent sessions + session results side by side on desktop */}
                 <div className="dashboard-split">
                   <RecentSessions
                     sessions={sessions}
@@ -82,10 +87,8 @@ export default function App() {
                   <SessionResultsChart data={stats.sessionResults} />
                 </div>
 
-                {/* Monthly is the next most important breakdown */}
                 <MonthlyProfitChart data={stats.profitByMonth} />
 
-                {/* Secondary charts in a grid */}
                 <div className="charts-grid">
                   <ProfitByCategory data={stats.profitByStakes} title="Profit by Stakes" />
                   <HourlyRateChart data={stats.hourlyByGameType} />
@@ -110,6 +113,10 @@ export default function App() {
             initial={editing}
             onCancel={editing ? handleCancel : undefined}
           />
+        )}
+
+        {tab === 'Reports' && (
+          <Reports sessions={sessions} />
         )}
 
         {tab === 'History' && (

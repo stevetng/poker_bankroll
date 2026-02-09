@@ -1,6 +1,12 @@
+import { useState } from 'react';
+
 function formatMoney(val) {
   const sign = val >= 0 ? '+' : '';
   return `${sign}$${Math.abs(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function formatBankroll(val) {
+  return `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function formatDuration(mins) {
@@ -9,8 +15,19 @@ function formatDuration(mins) {
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
-export default function StatsCards({ stats }) {
+export default function StatsCards({ stats, startingBankroll, onSetStartingBankroll }) {
+  const [editing, setEditing] = useState(false);
+  const [input, setInput] = useState(String(startingBankroll));
+  const currentBankroll = startingBankroll + stats.totalProfit;
   const heroColor = stats.totalProfit >= 0 ? 'green' : 'red';
+
+  const handleSave = () => {
+    const val = parseFloat(input);
+    if (!isNaN(val) && val >= 0) {
+      onSetStartingBankroll(val);
+    }
+    setEditing(false);
+  };
 
   const primaryCards = [
     {
@@ -60,10 +77,49 @@ export default function StatsCards({ stats }) {
 
   return (
     <div className="stats-section">
-      <div className={`stat-hero stat-${heroColor}`}>
-        <div className="stat-label">Total Profit</div>
-        <div className="stat-value">{formatMoney(stats.totalProfit)}</div>
+      <div className="bankroll-hero">
+        <div className="bankroll-card">
+          <div className="stat-label">Bankroll</div>
+          {editing ? (
+            <div className="bankroll-edit">
+              <span className="bankroll-dollar">$</span>
+              <input
+                type="number"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+                autoFocus
+                min="0"
+                step="0.01"
+              />
+              <button className="btn btn-primary btn-sm" onClick={handleSave}>Save</button>
+              <button className="btn btn-secondary btn-sm" onClick={() => setEditing(false)}>Cancel</button>
+            </div>
+          ) : (
+            <div className="bankroll-display">
+              <div className={`stat-value ${currentBankroll >= 0 ? 'stat-val-green' : 'stat-val-red'}`}>
+                {formatBankroll(currentBankroll)}
+              </div>
+              <button
+                className="btn-link bankroll-set"
+                onClick={() => { setInput(String(startingBankroll)); setEditing(true); }}
+              >
+                {startingBankroll === 0 ? 'Set starting bankroll' : 'Edit starting'}
+              </button>
+            </div>
+          )}
+          {!editing && startingBankroll > 0 && (
+            <div className="bankroll-sub">
+              Started at {formatBankroll(startingBankroll)}
+            </div>
+          )}
+        </div>
+        <div className={`bankroll-card stat-${heroColor}`}>
+          <div className="stat-label">Total Profit</div>
+          <div className="stat-value">{formatMoney(stats.totalProfit)}</div>
+        </div>
       </div>
+
       <div className="stats-primary">
         {primaryCards.map((c) => (
           <div key={c.label} className={`stat-card stat-${c.color}`}>
