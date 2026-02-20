@@ -22,27 +22,39 @@ export function useSessions(uid) {
     }
 
     const q = query(collection(db, 'users', uid, 'sessions'));
-    const unsub = onSnapshot(q, (snap) => {
-      const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-      setSessions(data);
-      setLoading(false);
-    });
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        setSessions(data);
+        setLoading(false);
+      },
+      (err) => {
+        console.error('Sessions listener error:', err);
+        setLoading(false);
+      }
+    );
     return unsub;
   }, [uid]);
 
   const addSession = useCallback(
     async (session) => {
       if (!uid) return;
-      await addDoc(collection(db, 'users', uid, 'sessions'), {
-        date: session.date,
-        gameType: session.gameType,
-        stakes: session.stakes,
-        location: session.location,
-        duration: Number(session.duration),
-        buyIn: Number(session.buyIn),
-        cashOut: Number(session.cashOut),
-        notes: session.notes || '',
-      });
+      try {
+        await addDoc(collection(db, 'users', uid, 'sessions'), {
+          date: session.date,
+          gameType: session.gameType,
+          stakes: session.stakes,
+          location: session.location,
+          duration: Number(session.duration),
+          buyIn: Number(session.buyIn),
+          cashOut: Number(session.cashOut),
+          notes: session.notes || '',
+        });
+      } catch (err) {
+        console.error('Add session error:', err);
+        alert('Failed to save session. Check your Firestore rules.');
+      }
     },
     [uid]
   );

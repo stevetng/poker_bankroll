@@ -13,23 +13,35 @@ export function useBankroll(uid) {
       return;
     }
 
-    const unsub = onSnapshot(doc(db, 'users', uid, 'config', 'bankroll'), (snap) => {
-      if (snap.exists()) {
-        setStartingBankrollLocal(snap.data().startingBankroll ?? 0);
-      } else {
-        setStartingBankrollLocal(0);
+    const unsub = onSnapshot(
+      doc(db, 'users', uid, 'config', 'bankroll'),
+      (snap) => {
+        if (snap.exists()) {
+          setStartingBankrollLocal(snap.data().startingBankroll ?? 0);
+        } else {
+          setStartingBankrollLocal(0);
+        }
+        setLoading(false);
+      },
+      (err) => {
+        console.error('Bankroll listener error:', err);
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    );
     return unsub;
   }, [uid]);
 
   const setStartingBankroll = useCallback(
     async (amount) => {
       if (!uid) return;
-      await setDoc(doc(db, 'users', uid, 'config', 'bankroll'), {
-        startingBankroll: Number(amount),
-      });
+      try {
+        await setDoc(doc(db, 'users', uid, 'config', 'bankroll'), {
+          startingBankroll: Number(amount),
+        });
+      } catch (err) {
+        console.error('Set bankroll error:', err);
+        alert('Failed to save bankroll. Check your Firestore rules.');
+      }
     },
     [uid]
   );
