@@ -1,26 +1,38 @@
 import { useState, useEffect, useCallback } from 'react';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
-const STORAGE_KEY = 'poker_bankroll_config';
-
-function load() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : { startingBankroll: 0 };
-  } catch {
-    return { startingBankroll: 0 };
-  }
-}
-
-export function useBankroll() {
-  const [config, setConfig] = useState(load);
+export function useBankroll(uid) {
+  const [startingBankroll, setStartingBankrollLocal] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-  }, [config]);
+    if (!uid) {
+      setStartingBankrollLocal(0);
+      setLoading(false);
+      return;
+    }
 
-  const setStartingBankroll = useCallback((amount) => {
-    setConfig((prev) => ({ ...prev, startingBankroll: Number(amount) }));
-  }, []);
+    const unsub = onSnapshot(doc(db, 'users', uid, 'config', 'bankroll'), (snap) => {
+      if (snap.exists()) {
+        setStartingBankrollLocal(snap.data().startingBankroll ?? 0);
+      } else {
+        setStartingBankrollLocal(0);
+      }
+      setLoading(false);
+    });
+    return unsub;
+  }, [uid]);
 
-  return { startingBankroll: config.startingBankroll, setStartingBankroll };
+  const setStartingBankroll = useCallback(
+    async (amount) => {
+      if (!uid) return;
+      await setDoc(doc(db, 'users', uid, 'config', 'bankroll'), {
+        startingBankroll: Number(amount),
+      });
+    },
+    [uid]
+  );
+
+  return { startingBankroll, loading, setStartingBankroll };
 }

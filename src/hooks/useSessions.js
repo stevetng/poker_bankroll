@@ -1,33 +1,39 @@
 import { useState, useEffect, useCallback } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  doc,
+  onSnapshot,
+  query,
+} from 'firebase/firestore';
+import { db } from '../firebase';
 
-const STORAGE_KEY = 'poker_bankroll_sessions';
-
-function loadSessions() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveSessions(sessions) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
-}
-
-export function useSessions() {
-  const [sessions, setSessions] = useState(loadSessions);
+export function useSessions(uid) {
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    saveSessions(sessions);
-  }, [sessions]);
+    if (!uid) {
+      setSessions([]);
+      setLoading(false);
+      return;
+    }
 
-  const addSession = useCallback((session) => {
-    setSessions((prev) => [
-      ...prev,
-      {
-        id: uuidv4(),
+    const q = query(collection(db, 'users', uid, 'sessions'));
+    const unsub = onSnapshot(q, (snap) => {
+      const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      setSessions(data);
+      setLoading(false);
+    });
+    return unsub;
+  }, [uid]);
+
+  const addSession = useCallback(
+    async (session) => {
+      if (!uid) return;
+      await addDoc(collection(db, 'users', uid, 'sessions'), {
         date: session.date,
         gameType: session.gameType,
         stakes: session.stakes,
@@ -36,33 +42,35 @@ export function useSessions() {
         buyIn: Number(session.buyIn),
         cashOut: Number(session.cashOut),
         notes: session.notes || '',
-      },
-    ]);
-  }, []);
+      });
+    },
+    [uid]
+  );
 
-  const deleteSession = useCallback((id) => {
-    setSessions((prev) => prev.filter((s) => s.id !== id));
-  }, []);
+  const deleteSession = useCallback(
+    async (id) => {
+      if (!uid) return;
+      await deleteDoc(doc(db, 'users', uid, 'sessions', id));
+    },
+    [uid]
+  );
 
-  const editSession = useCallback((id, updated) => {
-    setSessions((prev) =>
-      prev.map((s) =>
-        s.id === id
-          ? {
-              ...s,
-              date: updated.date,
-              gameType: updated.gameType,
-              stakes: updated.stakes,
-              location: updated.location,
-              duration: Number(updated.duration),
-              buyIn: Number(updated.buyIn),
-              cashOut: Number(updated.cashOut),
-              notes: updated.notes || '',
-            }
-          : s
-      )
-    );
-  }, []);
+  const editSession = useCallback(
+    async (id, updated) => {
+      if (!uid) return;
+      await updateDoc(doc(db, 'users', uid, 'sessions', id), {
+        date: updated.date,
+        gameType: updated.gameType,
+        stakes: updated.stakes,
+        location: updated.location,
+        duration: Number(updated.duration),
+        buyIn: Number(updated.buyIn),
+        cashOut: Number(updated.cashOut),
+        notes: updated.notes || '',
+      });
+    },
+    [uid]
+  );
 
-  return { sessions, addSession, deleteSession, editSession };
+  return { sessions, loading, addSession, deleteSession, editSession };
 }
