@@ -353,12 +353,12 @@ export default function Reports({ sessions }) {
             <h3>Filtered Cumulative Profit</h3>
             <ResponsiveContainer width="100%" height={260}>
               <LineChart data={report.cumulativeData} margin={{ left: 0, right: 8, top: 4, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
                 <XAxis dataKey="label" stroke="#888" fontSize={11} interval="preserveStartEnd" />
                 <YAxis stroke="#888" fontSize={11} tickFormatter={compactDollar} width={50} />
                 <Tooltip content={<MoneyTooltip />} />
                 <ReferenceLine y={0} stroke="#555" />
-                <Line type="monotone" dataKey="cumulative" stroke="#4ade80" strokeWidth={2} dot={{ r: 2 }} name="Cumulative" />
+                <Line type="monotone" dataKey="cumulative" stroke="#000080" strokeWidth={2} dot={{ r: 2 }} name="Cumulative" />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -368,14 +368,14 @@ export default function Reports({ sessions }) {
             <h3>Profit by Day of Week</h3>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={report.dayData} margin={{ left: 0, right: 8, top: 4, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
                 <XAxis dataKey="name" stroke="#888" fontSize={11} />
                 <YAxis stroke="#888" fontSize={11} tickFormatter={compactDollar} width={50} />
                 <Tooltip content={<MoneyTooltip />} />
                 <ReferenceLine y={0} stroke="#555" />
                 <Bar dataKey="profit" name="Profit" radius={[2, 2, 0, 0]}>
                   {report.dayData.map((entry, i) => (
-                    <Cell key={i} fill={entry.profit >= 0 ? '#4ade80' : '#f87171'} />
+                    <Cell key={i} fill={entry.profit >= 0 ? '#006400' : '#8b0000'} />
                   ))}
                 </Bar>
               </BarChart>
@@ -388,14 +388,14 @@ export default function Reports({ sessions }) {
               <h3>Profit by Stakes</h3>
               <ResponsiveContainer width="100%" height={Math.max(160, report.stakesData.length * 50)}>
                 <BarChart data={report.stakesData} layout="vertical" margin={{ left: 0, right: 8, top: 4, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
                   <XAxis type="number" stroke="#888" fontSize={11} tickFormatter={compactDollar} />
                   <YAxis type="category" dataKey="name" stroke="#888" fontSize={11} width={60} />
                   <Tooltip content={<MoneyTooltip />} />
                   <ReferenceLine x={0} stroke="#555" />
                   <Bar dataKey="profit" name="Profit" radius={[0, 2, 2, 0]}>
                     {report.stakesData.map((entry, i) => (
-                      <Cell key={i} fill={entry.profit >= 0 ? '#4ade80' : '#f87171'} />
+                      <Cell key={i} fill={entry.profit >= 0 ? '#006400' : '#8b0000'} />
                     ))}
                   </Bar>
                 </BarChart>

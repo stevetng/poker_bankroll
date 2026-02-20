@@ -1,14 +1,10 @@
 :root {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  line-height: 1.5;
+  font-family: Tahoma, 'Trebuchet MS', Verdana, Geneva, sans-serif;
+  line-height: 1.4;
   font-weight: 400;
-  color-scheme: dark;
-  color: #e2e8f0;
-  background-color: #0f0f1a;
+  color: #000000;
+  background: #3a6ea5;
   font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -19,6 +15,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: #3a6ea5;
 }
 
 #root {
@@ -26,10 +23,10 @@ body {
 }
 
 a {
-  color: #60a5fa;
-  text-decoration: none;
+  color: #0000ee;
+  text-decoration: underline;
 }
 
 a:hover {
-  text-decoration: underline;
+  color: #551a8b;
 }
