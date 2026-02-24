@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from './firebase';
 import { useAuth } from './hooks/useAuth';
 import { useSessions } from './hooks/useSessions';
 import { useBankroll } from './hooks/useBankroll';
@@ -9,6 +11,8 @@ import SessionList from './components/SessionList';
 import StatsCards from './components/StatsCards';
 import RecentSessions from './components/RecentSessions';
 import Reports from './components/Reports';
+import ImportExport from './components/ImportExport';
+import ApiSettings from './components/ApiSettings';
 import {
   ProfitTimeline,
   SessionResultsChart,
@@ -19,7 +23,7 @@ import {
 } from './components/Charts';
 import './App.css';
 
-const TABS = ['Dashboard', 'Log Session', 'Reports', 'History'];
+const TABS = ['Dashboard', 'Log Session', 'Reports', 'History', 'Import/Export', 'API'];
 
 export default function App() {
   const { user, loading: authLoading, error: authError, signUp, signIn, signOut, clearError } = useAuth();
@@ -74,6 +78,22 @@ export default function App() {
     setTab('Dashboard');
   };
 
+  const handleImport = async (importedSessions) => {
+    const ref = collection(db, 'users', uid, 'sessions');
+    for (const s of importedSessions) {
+      await addDoc(ref, {
+        date: s.date,
+        gameType: s.gameType || 'No Limit Hold\'em',
+        stakes: s.stakes || '1/2',
+        location: s.location || '',
+        duration: Number(s.duration) || 0,
+        buyIn: Number(s.buyIn),
+        cashOut: Number(s.cashOut),
+        notes: s.notes || '',
+      });
+    }
+  };
+
   return (
     <div className="app">
       <header className="app-header">
@@ -93,7 +113,7 @@ export default function App() {
               </button>
             ))}
           </nav>
-          <button className="btn btn-signout" onClick={signOut}>
+          <button className="btn-signout" onClick={signOut}>
             Sign Out
           </button>
         </div>
@@ -160,6 +180,14 @@ export default function App() {
 
             {tab === 'History' && (
               <SessionList sessions={sessions} onDelete={deleteSession} onEdit={handleEdit} />
+            )}
+
+            {tab === 'Import/Export' && (
+              <ImportExport sessions={sessions} onImport={handleImport} />
+            )}
+
+            {tab === 'API' && (
+              <ApiSettings uid={uid} />
             )}
           </>
         )}

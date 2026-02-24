@@ -1,10 +1,11 @@
 :root {
-  font-family: Tahoma, 'Trebuchet MS', Verdana, Geneva, sans-serif;
-  line-height: 1.4;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
   font-weight: 400;
-  color: #000000;
-  background: #3a6ea5;
+  color: #e8eaed;
   font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -15,7 +16,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #3a6ea5;
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 40%, #0d2137 70%, #0a0a1a 100%);
+  background-attachment: fixed;
 }
 
 #root {
@@ -23,10 +25,10 @@ body {
 }
 
 a {
-  color: #0000ee;
-  text-decoration: underline;
+  color: #7dd3fc;
+  text-decoration: none;
 }
 
 a:hover {
-  color: #551a8b;
+  color: #bae6fd;
 }
